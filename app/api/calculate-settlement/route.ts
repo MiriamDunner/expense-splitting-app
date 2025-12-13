@@ -16,7 +16,7 @@ interface Transaction {
 
 export async function POST(request: Request) {
   try {
-    const { participants }: { participants: Participant[] } = await request.json()
+    const { event_name, participants }: { event_name?: string; participants: Participant[] } = await request.json()
 
     if (!participants || participants.length < 2) {
       return NextResponse.json({ error: "At least 2 participants are required" }, { status: 400 })
@@ -77,6 +77,7 @@ export async function POST(request: Request) {
     })
 
     return NextResponse.json({
+      event_name: event_name || "Shared Expense",
       total_expense: Math.round(total_expense * 100) / 100,
       per_person_share: Math.round(per_person_share * 100) / 100,
       transactions,

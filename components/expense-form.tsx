@@ -7,6 +7,8 @@ import { Plus, Trash2, Calculator, RotateCcw } from "lucide-react"
 import type { Participant } from "@/app/page"
 
 interface ExpenseFormProps {
+  eventName: string
+  onEventNameChange: (name: string) => void
   participants: Participant[]
   onAddParticipant: () => void
   onUpdateParticipant: (id: string, field: keyof Participant, value: string | number) => void
@@ -17,6 +19,8 @@ interface ExpenseFormProps {
 }
 
 export function ExpenseForm({
+  eventName,
+  onEventNameChange,
   participants,
   onAddParticipant,
   onUpdateParticipant,
@@ -31,9 +35,18 @@ export function ExpenseForm({
     <Card>
       <CardHeader>
         <CardTitle>Add Participants</CardTitle>
-        <CardDescription>Enter the name, email, and amount paid by each participant</CardDescription>
+        <CardDescription>Enter the event name and participant details</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-foreground">Event Name</label>
+          <Input
+            placeholder="e.g., Weekend Trip, Dinner Party, Team Lunch"
+            value={eventName}
+            onChange={(e) => onEventNameChange(e.target.value)}
+          />
+        </div>
+
         <div className="space-y-4">
           {participants.map((participant, index) => (
             <div key={participant.id} className="space-y-3 rounded-lg border border-border bg-card p-4">

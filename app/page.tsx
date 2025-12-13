@@ -21,6 +21,7 @@ export interface Transaction {
 }
 
 export interface SettlementResult {
+  event_name: string
   total_expense: number
   per_person_share: number
   transactions: Transaction[]
@@ -36,6 +37,7 @@ export interface SettlementResult {
 }
 
 export default function Home() {
+  const [eventName, setEventName] = useState("")
   const [participants, setParticipants] = useState<Participant[]>([{ id: "1", name: "", email: "", amount_paid: 0 }])
   const [settlement, setSettlement] = useState<SettlementResult | null>(null)
   const [isCalculating, setIsCalculating] = useState(false)
@@ -55,7 +57,6 @@ export default function Home() {
   }
 
   const calculateSettlement = async () => {
-    // Validate participants
     const validParticipants = participants.filter((p) => p.name && p.email)
 
     if (validParticipants.length < 2) {
@@ -66,12 +67,11 @@ export default function Home() {
     setIsCalculating(true)
 
     try {
-      // In a real app, this would call the FastAPI backend
-      // For demo purposes, we'll simulate the calculation
       const response = await fetch("/api/calculate-settlement", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          event_name: eventName || "Shared Expense",
           participants: validParticipants.map((p) => ({
             name: p.name,
             email: p.email,
@@ -93,6 +93,7 @@ export default function Home() {
   }
 
   const resetForm = () => {
+    setEventName("")
     setParticipants([{ id: "1", name: "", email: "", amount_paid: 0 }])
     setSettlement(null)
   }
@@ -108,6 +109,8 @@ export default function Home() {
         <div className="grid gap-8 lg:grid-cols-2">
           <div className="space-y-6">
             <ExpenseForm
+              eventName={eventName}
+              onEventNameChange={setEventName}
               participants={participants}
               onAddParticipant={addParticipant}
               onUpdateParticipant={updateParticipant}
