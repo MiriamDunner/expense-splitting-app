@@ -14,9 +14,11 @@ interface SettlementSummaryProps {
 export function SettlementSummary({ settlement }: SettlementSummaryProps) {
   const [isSending, setIsSending] = useState(false)
   const [emailsSent, setEmailsSent] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSendEmails = async () => {
     setIsSending(true)
+    setError(null)
     try {
       const response = await fetch("/api/send-notifications", {
         method: "POST",
@@ -24,13 +26,23 @@ export function SettlementSummary({ settlement }: SettlementSummaryProps) {
         body: JSON.stringify({ settlement }),
       })
 
-      if (!response.ok) throw new Error("Failed to send emails")
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null)
+        throw new Error(errorData?.error || "Failed to send emails")
+      }
+
+      const result = await response.json()
+      console.log("[v0] Email send result:", result)
 
       setEmailsSent(true)
       setTimeout(() => setEmailsSent(false), 3000)
     } catch (error) {
-      console.error("Error sending emails:", error)
-      alert("Failed to send email notifications. Please try again.")
+      console.error("[v0] Error sending emails:", error)
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
+      setError(errorMessage)
+      alert(
+        `Failed to send email notifications: ${errorMessage}\n\nPlease check your RESEND_API_KEY environment variable.`,
+      )
     } finally {
       setIsSending(false)
     }
@@ -151,6 +163,14 @@ export function SettlementSummary({ settlement }: SettlementSummaryProps) {
           </div>
         </CardContent>
       </Card>
+
+      {error && (
+        <Card className="border-destructive bg-destructive/10">
+          <CardContent className="pt-6">
+            <p className="text-sm text-destructive">{error}</p>
+          </CardContent>
+        </Card>
+      )}
 
       <Button className="w-full" size="lg" onClick={handleSendEmails} disabled={isSending || emailsSent}>
         <Send className="mr-2 h-4 w-4" />

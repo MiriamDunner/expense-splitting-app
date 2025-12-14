@@ -18,6 +18,11 @@ interface ExpenseFormProps {
   isCalculating: boolean
 }
 
+const isValidEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
+}
+
 export function ExpenseForm({
   eventName,
   onEventNameChange,
@@ -31,6 +36,59 @@ export function ExpenseForm({
 }: ExpenseFormProps) {
   const totalPaid = participants.reduce((sum, p) => sum + (p.amount_paid || 0), 0)
 
+  const validateForm = (): { isValid: boolean; errors: string[] } => {
+    const errors: string[] = []
+
+    // Event name validation
+    if (!eventName.trim()) {
+      errors.push("Event name is required")
+    }
+
+    // At least 2 participants
+    if (participants.length < 2) {
+      errors.push("At least 2 participants are required")
+    }
+
+    // Validate each participant
+    participants.forEach((participant, index) => {
+      if (!participant.name.trim()) {
+        errors.push(`Participant ${index + 1}: Name is required`)
+      }
+
+      if (!participant.email.trim()) {
+        errors.push(`Participant ${index + 1}: Email is required`)
+      } else if (!isValidEmail(participant.email)) {
+        errors.push(`Participant ${index + 1}: Invalid email format`)
+      }
+
+      if (participant.amount_paid < 0) {
+        errors.push(`Participant ${index + 1}: Amount cannot be negative`)
+      }
+    })
+
+    // At least one person must have paid
+    if (totalPaid === 0) {
+      errors.push("At least one participant must have paid something")
+    }
+
+    return { isValid: errors.length === 0, errors }
+  }
+
+  const handleCalculate = () => {
+    const validation = validateForm()
+    if (!validation.isValid) {
+      alert("Please fix the following errors:\n\n" + validation.errors.join("\n"))
+      return
+    }
+    onCalculate()
+  }
+
+  const getEmailError = (email: string): boolean => {
+    return email.trim() !== "" && !isValidEmail(email)
+  }
+
+  const { isValid } = validateForm()
+
   return (
     <Card>
       <CardHeader>
@@ -39,11 +97,14 @@ export function ExpenseForm({
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground">Event Name</label>
+          <label className="text-sm font-medium text-foreground">
+            Event Name <span className="text-destructive">*</span>
+          </label>
           <Input
             placeholder="e.g., Weekend Trip, Dinner Party, Team Lunch"
             value={eventName}
             onChange={(e) => onEventNameChange(e.target.value)}
+            className={!eventName.trim() ? "border-destructive/50" : ""}
           />
         </div>
 
@@ -66,22 +127,37 @@ export function ExpenseForm({
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Name</label>
+                  <label className="text-sm font-medium text-foreground">
+                    Name <span className="text-destructive">*</span>
+                  </label>
                   <Input
                     placeholder="John Doe"
                     value={participant.name}
                     onChange={(e) => onUpdateParticipant(participant.id, "name", e.target.value)}
+                    className={!participant.name.trim() ? "border-destructive/50" : ""}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Email</label>
+                  <label className="text-sm font-medium text-foreground">
+                    Email <span className="text-destructive">*</span>
+                  </label>
                   <Input
                     type="email"
                     placeholder="john@example.com"
                     value={participant.email}
                     onChange={(e) => onUpdateParticipant(participant.id, "email", e.target.value)}
+                    className={
+                      getEmailError(participant.email)
+                        ? "border-destructive"
+                        : !participant.email.trim()
+                          ? "border-destructive/50"
+                          : ""
+                    }
                   />
+                  {getEmailError(participant.email) && (
+                    <p className="text-xs text-destructive">Please enter a valid email address</p>
+                  )}
                 </div>
               </div>
 
@@ -96,7 +172,9 @@ export function ExpenseForm({
                   onChange={(e) =>
                     onUpdateParticipant(participant.id, "amount_paid", Number.parseFloat(e.target.value) || 0)
                   }
+                  className={participant.amount_paid < 0 ? "border-destructive" : ""}
                 />
+                {participant.amount_paid < 0 && <p className="text-xs text-destructive">Amount cannot be negative</p>}
               </div>
             </div>
           ))}
@@ -115,11 +193,7 @@ export function ExpenseForm({
         </div>
 
         <div className="flex gap-3">
-          <Button
-            onClick={onCalculate}
-            disabled={isCalculating || participants.filter((p) => p.name && p.email).length < 2}
-            className="flex-1"
-          >
+          <Button onClick={handleCalculate} disabled={isCalculating} className="flex-1">
             <Calculator className="mr-2 h-4 w-4" />
             {isCalculating ? "Calculating..." : "Calculate Settlement"}
           </Button>
