@@ -24,6 +24,7 @@ class Participant(BaseModel):
 class MessageCreate(BaseModel):
     sender_name: str
     text: str
+    participants: list[str] | None = None
 
 class MessageResponse(BaseModel):
     id: str
@@ -32,10 +33,11 @@ class MessageResponse(BaseModel):
     text: str
     created_at: str
 
-# In-memory message store
+# In-memory message store and participant registry
 from datetime import datetime
 import uuid
 chat_store: Dict[str, list] = {}
+event_participants: Dict[str, list] = {}
 
 class ExpenseRequest(BaseModel):
     participants: List[Participant]
@@ -175,6 +177,16 @@ def create_message(event_id: str, message: MessageCreate):
         raise HTTPException(status_code=400, detail="text is required")
     if len(message.text) > 1000:
         raise HTTPException(status_code=400, detail="Message too long (max 1000 chars)")
+
+    # Update and validate participant list
+    if message.participants:
+        event_participants[event_id] = message.participants
+    known = event_participants.get(event_id)
+    if known and message.sender_name.strip() not in known:
+        raise HTTPException(
+            status_code=403,
+            detail=f"Unknown sender '{message.sender_name}'. Allowed: {', '.join(known)}"
+        )
 
     msg = {
         "id": f"msg_{uuid.uuid4().hex[:12]}",
