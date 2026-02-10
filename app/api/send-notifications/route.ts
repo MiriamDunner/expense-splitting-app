@@ -25,10 +25,6 @@ interface SettlementResult {
   >
 }
 
-const resend = process.env.RESEND_API_KEY
-  ? new Resend(process.env.RESEND_API_KEY)
-  : null
-
 function createEmailHTML(
   name: string,
   eventName: string,
@@ -224,54 +220,19 @@ export async function POST(request: Request) {
 
     const eventName = settlement.event_name || "הוצאה משותפת"
 
-    if (resend) {
-      const emailPromises = Object.entries(settlement.summary).map(
-        async ([email, info]) => {
-          const htmlContent = createEmailHTML(
-            info.name,
-            eventName,
-            settlement,
-            email,
-            info,
-          )
-          const textContent = createEmailText(
-            info.name,
-            eventName,
-            settlement,
-            email,
-            info,
-          )
+    // Initialize Resend
+    const resend = new Resend(process.env.RESEND_API_KEY)
 
-          try {
-            const result = await resend.emails.send({
-              from: "מחלק הוצאות <onboarding@resend.dev>",
-              to: email,
-              subject: `סיכום חלוקת הוצאות - ${eventName}`,
-              html: htmlContent,
-              text: textContent,
-            })
-            return { email, success: true, id: result.data?.id }
-          } catch (error: any) {
-            console.error("[v0] Failed to send email to:", email, error)
-            return { email, success: false, error: error.message }
-          }
-        },
-      )
-
-      const results = await Promise.all(emailPromises)
-      const successCount = results.filter((r) => r.success).length
-
-      return NextResponse.json({
-        success: true,
-        message: `${successCount}/${results.length} מיילים נשלחו בהצלחה`,
-        results,
-      })
-    } else {
-      console.log("\n" + "=".repeat(80))
-      console.log("EMAIL PREVIEW MODE (No RESEND_API_KEY configured)")
-      console.log("=".repeat(80))
-
-      for (const [email, info] of Object.entries(settlement.summary)) {
+    // Send emails to all participants
+    const emailPromises = Object.entries(settlement.summary).map(
+      async ([email, info]) => {
+        const htmlContent = createEmailHTML(
+          info.name,
+          eventName,
+          settlement,
+          email,
+          info,
+        )
         const textContent = createEmailText(
           info.name,
           eventName,
@@ -279,28 +240,38 @@ export async function POST(request: Request) {
           email,
           info,
         )
-        console.log("\n" + "-".repeat(80))
-        console.log(`TO: ${email}`)
-        console.log(`SUBJECT: סיכום חלוקת הוצאות - ${eventName}`)
-        console.log("-".repeat(80))
-        console.log(textContent)
-      }
 
-      console.log("\n" + "=".repeat(80))
-      console.log(
-        "To send real emails, add RESEND_API_KEY to your environment variables",
-      )
-      console.log("=".repeat(80) + "\n")
+        try {
+          const result = await resend.emails.send({
+            from: "מחלק הוצאות <onboarding@resend.dev>",
+            to: email,
+            subject: `סיכום חלוקת הוצאות - ${eventName}`,
+            html: htmlContent,
+          })
 
-      return NextResponse.json({
-        success: true,
-        mode: "preview",
-        message: `${Object.keys(settlement.summary).length} תצוגות מקדימות של מיילים נרשמו בלוג`,
-        note: "הוסיפו RESEND_API_KEY כדי לשלוח מיילים אמיתיים",
-      })
-    }
+          console.log(`[Email] Sent to ${email}:`, result.data?.id)
+          return { email, success: true, id: result.data?.id }
+        } catch (error: any) {
+          console.error(`[Email] Failed to send to ${email}:`, error)
+          return { email, success: false, error: error.message }
+        }
+      },
+    )
+
+    const results = await Promise.all(emailPromises)
+    const successCount = results.filter((r) => r.success).length
+
+    console.log(
+      `[Email Summary] ${successCount}/${results.length} emails sent successfully`,
+    )
+
+    return NextResponse.json({
+      success: true,
+      message: `${successCount}/${results.length} מיילים נשלחו בהצלחה`,
+      results,
+    })
   } catch (error: any) {
-    console.error("[v0] Email notification error:", error)
+    console.error("[Email] Error:", error)
     return NextResponse.json(
       { error: "שגיאה בשליחת התראות", details: error.message },
       { status: 500 },

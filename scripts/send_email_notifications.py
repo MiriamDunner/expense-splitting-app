@@ -151,11 +151,20 @@ def send_notifications(settlement_data: Dict) -> List[Dict]:
         
         notifications.append({
             "email": email,
+            "name": info["name"],
             "subject": subject,
             "sent": success,
         })
     
-    return notifications
+    # Return summary with statistics
+    successful = sum(1 for n in notifications if n["sent"])
+    return {
+        "success": True,
+        "total": len(notifications),
+        "sent": successful,
+        "notifications": notifications,
+        "message": f"Email notifications sent to {successful}/{len(notifications)} participants"
+    }
 
 
 # Example usage

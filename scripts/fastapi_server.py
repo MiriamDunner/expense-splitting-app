@@ -3,6 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
 from typing import List, Dict
 import uvicorn
+import sys
+import os
+sys.path.insert(0, os.path.dirname(__file__))
+from send_email_notifications import send_notifications as send_emails_to_participants
 
 app = FastAPI(title="Expense Splitter API")
 
@@ -50,10 +54,15 @@ class Transaction(BaseModel):
     amount: float
 
 class SettlementResponse(BaseModel):
+    event_name: str | None = None
     total_expense: float
     per_person_share: float
     transactions: List[Transaction]
-    summary: Dict[str, Dict[str, float]]
+    summary: Dict[str, Dict]  # Allow any dictionary structure
+
+class SendEmailRequest(BaseModel):
+    settlement: SettlementResponse
+    event_name: str | None = None
 
 def minimize_transactions(participants: List[Participant]) -> SettlementResponse:
     """
@@ -140,6 +149,7 @@ def read_root():
         "version": "1.0",
         "endpoints": {
             "POST /calculate-settlement": "Calculate expense settlement",
+            "POST /send-notifications": "Send email notifications to participants",
             "GET /events/{event_id}/messages": "Get chat messages for event",
             "POST /events/{event_id}/messages": "Send a chat message to event",
             "GET /health": "Health check"
@@ -159,6 +169,34 @@ def calculate_settlement(request: ExpenseRequest):
         return minimize_transactions(request.participants)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/send-notifications")
+def send_notifications_endpoint(request: SendEmailRequest):
+    """
+    Send email notifications to all participants about their settlement.
+    """
+    try:
+        settlement_data = {
+            "total_expense": request.settlement.total_expense,
+            "per_person_share": request.settlement.per_person_share,
+            "transactions": [t.model_dump() for t in request.settlement.transactions],
+            "summary": request.settlement.summary
+        }
+        
+        # Call the Python email service
+        result = send_emails_to_participants(settlement_data)
+        
+        return {
+            "success": True,
+            "message": "Notifications sent successfully",
+            "result": result
+        }
+    except Exception as e:
+        print(f"Error sending notifications: {str(e)}")
+        return {
+            "success": False,
+            "message": f"Error sending notifications: {str(e)}"
+        }
 
 # --- Chat Endpoints ---
 

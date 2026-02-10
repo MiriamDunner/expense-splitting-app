@@ -37,30 +37,42 @@ export function SettlementSummary({ settlement }: SettlementSummaryProps) {
   const handleSendEmails = async () => {
     setIsSending(true)
     setError(null)
+    
+    console.log("[EMAIL] Starting email send process...")
+    console.log("[EMAIL] Settlement data:", settlement)
+    
     try {
+      const payload = { settlement }
+      console.log("[EMAIL] Payload:", payload)
+      
       const response = await fetch("/api/send-notifications", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ settlement }),
+        body: JSON.stringify(payload),
       })
+
+      console.log("[EMAIL] Response status:", response.status)
+      console.log("[EMAIL] Response ok:", response.ok)
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null)
+        console.error("[EMAIL] Error response:", errorData)
         throw new Error(errorData?.error || "Failed to send emails")
       }
 
       const result = await response.json()
-      console.log("[v0] Email send result:", result)
+      console.log("[EMAIL] Success! Result:", result)
 
       setEmailsSent(true)
+      alert(`הצלחה! ${result.message}`)
       setTimeout(() => setEmailsSent(false), 4000)
     } catch (error) {
-      console.error("[v0] Error sending emails:", error)
+      console.error("[EMAIL] Error occurred:", error)
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error occurred"
       setError(errorMessage)
       alert(
-        `שגיאה בשליחת מיילים: ${errorMessage}\n\nבדקו שהגדרתם את RESEND_API_KEY.`,
+        `שגיאה בשליחת מיילים: ${errorMessage}\n\nבדקו את הקונסול לפרטים נוספים.`,
       )
     } finally {
       setIsSending(false)

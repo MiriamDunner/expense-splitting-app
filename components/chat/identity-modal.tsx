@@ -77,9 +77,9 @@ export function IdentityModal({
 
         {step === "select" ? (
           <div className="space-y-2">
-            {participantNames.map((name) => (
+            {participantNames.map((name, index) => (
               <button
-                key={name}
+                key={`participant-${index}-${name}`}
                 type="button"
                 onClick={() => handleSelect(name)}
                 className="flex w-full items-center gap-3 rounded-xl border border-border/60 bg-card p-3.5 text-right transition-all duration-200 hover:border-primary/40 hover:bg-primary/5 hover:shadow-md active:scale-[0.98]"
