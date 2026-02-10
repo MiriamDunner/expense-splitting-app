@@ -62,31 +62,33 @@ export function ExpenseForm({
     const errors: string[] = []
 
     if (!eventName.trim()) {
-      errors.push("חובה למלא שם אירוע")
+      errors.push("\u05D7\u05D5\u05D1\u05D4 \u05DC\u05DE\u05DC\u05D0 \u05E9\u05DD \u05D0\u05D9\u05E8\u05D5\u05E2")
     }
 
     if (participants.length < 2) {
-      errors.push("חובה להוסיף לפחות 2 משתתפים")
+      errors.push("\u05D7\u05D5\u05D1\u05D4 \u05DC\u05D4\u05D5\u05E1\u05D9\u05E3 \u05DC\u05E4\u05D7\u05D5\u05EA 2 \u05DE\u05E9\u05EA\u05EA\u05E4\u05D9\u05DD")
     }
 
-    participants.forEach((participant, index) => {
+    for (let i = 0; i < participants.length; i++) {
+      const participant = participants[i]
+
       if (!participant.name.trim()) {
-        errors.push(`משתתף ${index + 1}: חובה למלא שם`)
+        errors.push(`\u05DE\u05E9\u05EA\u05EA\u05E3 ${i + 1}: \u05D7\u05D5\u05D1\u05D4 \u05DC\u05DE\u05DC\u05D0 \u05E9\u05DD`)
       }
 
       if (!participant.email.trim()) {
-        errors.push(`משתתף ${index + 1}: חובה למלא מייל`)
+        errors.push(`\u05DE\u05E9\u05EA\u05EA\u05E3 ${i + 1}: \u05D7\u05D5\u05D1\u05D4 \u05DC\u05DE\u05DC\u05D0 \u05DE\u05D9\u05D9\u05DC`)
       } else if (!isValidEmail(participant.email)) {
-        errors.push(`משתתף ${index + 1}: כתובת מייל לא תקינה`)
+        errors.push(`\u05DE\u05E9\u05EA\u05EA\u05E3 ${i + 1}: \u05DB\u05EA\u05D5\u05D1\u05EA \u05DE\u05D9\u05D9\u05DC \u05DC\u05D0 \u05EA\u05E7\u05D9\u05E0\u05D4`)
       }
 
       if (participant.amount_paid < 0) {
-        errors.push(`משתתף ${index + 1}: סכום לא יכול להיות שלילי`)
+        errors.push(`\u05DE\u05E9\u05EA\u05EA\u05E3 ${i + 1}: \u05E1\u05DB\u05D5\u05DD \u05DC\u05D0 \u05D9\u05DB\u05D5\u05DC \u05DC\u05D4\u05D9\u05D5\u05EA \u05E9\u05DC\u05D9\u05DC\u05D9`)
       }
-    })
+    }
 
     if (totalPaid === 0) {
-      errors.push("לפחות משתתף אחד צריך לשלם משהו")
+      errors.push("\u05DC\u05E4\u05D7\u05D5\u05EA \u05DE\u05E9\u05EA\u05EA\u05E3 \u05D0\u05D7\u05D3 \u05E6\u05E8\u05D9\u05DA \u05DC\u05E9\u05DC\u05DD \u05DE\u05E9\u05D4\u05D5")
     }
 
     return { isValid: errors.length === 0, errors }
@@ -95,7 +97,7 @@ export function ExpenseForm({
   const handleCalculate = () => {
     const validation = validateForm()
     if (!validation.isValid) {
-      alert("יש לתקן את השגיאות הבאות:\n\n" + validation.errors.join("\n"))
+      alert("\u05D9\u05E9 \u05DC\u05EA\u05E7\u05DF \u05D0\u05EA \u05D4\u05E9\u05D2\u05D9\u05D0\u05D5\u05EA \u05D4\u05D1\u05D0\u05D5\u05EA:\n\n" + validation.errors.join("\n"))
       return
     }
     onCalculate()
@@ -118,10 +120,10 @@ export function ExpenseForm({
           <div className="rounded-lg bg-primary/10 p-1.5">
             <Users className="h-5 w-5 text-primary" />
           </div>
-          {"הוסיפו משתתפים"}
+          {"\u05D4\u05D5\u05E1\u05D9\u05E4\u05D5 \u05DE\u05E9\u05EA\u05EA\u05E4\u05D9\u05DD"}
         </CardTitle>
         <CardDescription className="text-sm leading-relaxed">
-          {"הזינו את שם האירוע ופרטי המשתתפים כדי להתחיל"}
+          {"\u05D4\u05D6\u05D9\u05E0\u05D5 \u05D0\u05EA \u05E9\u05DD \u05D4\u05D0\u05D9\u05E8\u05D5\u05E2 \u05D5\u05E4\u05E8\u05D8\u05D9 \u05D4\u05DE\u05E9\u05EA\u05EA\u05E4\u05D9\u05DD \u05DB\u05D3\u05D9 \u05DC\u05D4\u05EA\u05D7\u05D9\u05DC"}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-5 pt-5">
@@ -131,13 +133,13 @@ export function ExpenseForm({
             <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-xs font-bold text-primary-foreground">
               1
             </div>
-            <span className="text-sm font-medium text-foreground">{"שם האירוע"}</span>
+            <span className="text-sm font-medium text-foreground">{"\u05E9\u05DD \u05D4\u05D0\u05D9\u05E8\u05D5\u05E2"}</span>
           </div>
 
           <div className="relative">
             <CalendarHeart className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="לדוגמה: טיול סופ\"ש, ארוחת ערב, צהריים צוותי"
+              placeholder={"\u05DC\u05D3\u05D5\u05D2\u05DE\u05D0: \u05D8\u05D9\u05D5\u05DC \u05E1\u05D5\u05E4\u05F4\u05E9, \u05D0\u05E8\u05D5\u05D7\u05EA \u05E2\u05E8\u05D1, \u05E6\u05D4\u05E8\u05D9\u05D9\u05DD \u05E6\u05D5\u05D5\u05EA\u05D9"}
               value={eventName}
               onChange={(e) => onEventNameChange(e.target.value)}
               className={`pr-10 transition-all duration-300 ${
@@ -148,7 +150,7 @@ export function ExpenseForm({
           {eventName.trim() && (
             <p className="flex items-center gap-1.5 text-xs font-medium text-primary animate-in fade-in slide-in-from-top-1 duration-300">
               <CheckCircle2 className="h-3.5 w-3.5" />
-              {"שם האירוע הוגדר"}
+              {"\u05E9\u05DD \u05D4\u05D0\u05D9\u05E8\u05D5\u05E2 \u05D4\u05D5\u05D2\u05D3\u05E8"}
             </p>
           )}
         </div>
@@ -159,10 +161,10 @@ export function ExpenseForm({
             <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-xs font-bold text-primary-foreground">
               2
             </div>
-            <span className="text-sm font-medium text-foreground">{"פרטי משתתפים"}</span>
+            <span className="text-sm font-medium text-foreground">{"\u05E4\u05E8\u05D8\u05D9 \u05DE\u05E9\u05EA\u05EA\u05E4\u05D9\u05DD"}</span>
             {completedCount > 0 && (
               <span className="mr-auto rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
-                {completedCount}/{participants.length} {"הושלמו"}
+                {completedCount}/{participants.length} {"\u05D4\u05D5\u05E9\u05DC\u05DE\u05D5"}
               </span>
             )}
           </div>
@@ -192,7 +194,7 @@ export function ExpenseForm({
                         <User className="h-3.5 w-3.5" />
                       )}
                     </div>
-                    {"משתתף"} {index + 1}
+                    {"\u05DE\u05E9\u05EA\u05EA\u05E3"} {index + 1}
                   </span>
                   {participants.length > 1 && (
                     <Button
@@ -200,7 +202,7 @@ export function ExpenseForm({
                       size="sm"
                       onClick={() => onRemoveParticipant(participant.id)}
                       className="h-8 w-8 bg-transparent p-0 text-muted-foreground opacity-0 transition-all duration-200 hover:scale-110 hover:text-destructive group-hover:opacity-100"
-                      title="הסרת משתתף"
+                      title={"\u05D4\u05E1\u05E8\u05EA \u05DE\u05E9\u05EA\u05EA\u05E3"}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -212,10 +214,10 @@ export function ExpenseForm({
                   <div className="space-y-1.5">
                     <label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
                       <User className="h-3 w-3" />
-                      {"שם"} <span className="text-destructive">*</span>
+                      {"\u05E9\u05DD"} <span className="text-destructive">*</span>
                     </label>
                     <Input
-                      placeholder="ישראל ישראלי"
+                      placeholder={"\u05D9\u05E9\u05E8\u05D0\u05DC \u05D9\u05E9\u05E8\u05D0\u05DC\u05D9"}
                       value={participant.name}
                       onChange={(e) =>
                         onUpdateParticipant(participant.id, "name", e.target.value)
@@ -232,7 +234,7 @@ export function ExpenseForm({
                   <div className="space-y-1.5">
                     <label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
                       <Mail className="h-3 w-3" />
-                      {"מייל"} <span className="text-destructive">*</span>
+                      {"\u05DE\u05D9\u05D9\u05DC"} <span className="text-destructive">*</span>
                     </label>
                     <Input
                       type="email"
@@ -253,7 +255,7 @@ export function ExpenseForm({
                     {getEmailError(participant.email) && (
                       <p className="flex items-center gap-1 text-xs text-destructive animate-in fade-in slide-in-from-top-1 duration-200">
                         <AlertCircle className="h-3 w-3" />
-                        {"כתובת מייל לא תקינה"}
+                        {"\u05DB\u05EA\u05D5\u05D1\u05EA \u05DE\u05D9\u05D9\u05DC \u05DC\u05D0 \u05EA\u05E7\u05D9\u05E0\u05D4"}
                       </p>
                     )}
                   </div>
@@ -263,12 +265,12 @@ export function ExpenseForm({
                 <div className="space-y-1.5">
                   <label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
                     <Coins className="h-3 w-3" />
-                    {"סכום ששולם"}
-                    <span className="font-normal text-muted-foreground/70">{"(לא חובה)"}</span>
+                    {"\u05E1\u05DB\u05D5\u05DD \u05E9\u05E9\u05D5\u05DC\u05DD"}
+                    <span className="font-normal text-muted-foreground/70">{`(\u05DC\u05D0 \u05D7\u05D5\u05D1\u05D4)`}</span>
                   </label>
                   <div className="relative">
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-muted-foreground">
-                      {"₪"}
+                      {"\u20AA"}
                     </span>
                     <Input
                       type="number"
@@ -296,7 +298,7 @@ export function ExpenseForm({
                   {participant.amount_paid < 0 && (
                     <p className="flex items-center gap-1 text-xs text-destructive animate-in fade-in duration-200">
                       <AlertCircle className="h-3 w-3" />
-                      {"סכום לא יכול להיות שלילי"}
+                      {"\u05E1\u05DB\u05D5\u05DD \u05DC\u05D0 \u05D9\u05DB\u05D5\u05DC \u05DC\u05D4\u05D9\u05D5\u05EA \u05E9\u05DC\u05D9\u05DC\u05D9"}
                     </p>
                   )}
                 </div>
@@ -310,7 +312,7 @@ export function ExpenseForm({
             className="w-full border-dashed border-primary/40 bg-transparent transition-all duration-300 hover:scale-[1.01] hover:border-primary hover:bg-primary/5"
           >
             <Plus className="ml-2 h-4 w-4" />
-            {"הוסיפו משתתף נוסף"}
+            {"\u05D4\u05D5\u05E1\u05D9\u05E4\u05D5 \u05DE\u05E9\u05EA\u05EA\u05E3 \u05E0\u05D5\u05E1\u05E3"}
           </Button>
         </div>
 
@@ -319,15 +321,15 @@ export function ExpenseForm({
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-2 text-sm font-medium text-foreground">
               <Coins className="h-4 w-4 text-primary" />
-              {"סה\"כ הוצאות"}
+              {`\u05E1\u05D4\u05F4\u05DB \u05D4\u05D5\u05E6\u05D0\u05D5\u05EA`}
             </span>
             <span className="text-2xl font-bold tracking-tight text-foreground">
-              {"₪"}{totalPaid.toFixed(2)}
+              {"\u20AA"}{totalPaid.toFixed(2)}
             </span>
           </div>
           {totalPaid > 0 && participants.length >= 2 && (
             <p className="mt-2 text-xs text-muted-foreground animate-in fade-in duration-300">
-              {"מחולק בין"} {participants.length} {"משתתפים"} = {"₪"}{(totalPaid / participants.length).toFixed(2)} {"לכל אחד"}
+              {"\u05DE\u05D7\u05D5\u05DC\u05E7 \u05D1\u05D9\u05DF"} {participants.length} {"\u05DE\u05E9\u05EA\u05EA\u05E4\u05D9\u05DD"} = {"\u20AA"}{(totalPaid / participants.length).toFixed(2)} {"\u05DC\u05DB\u05DC \u05D0\u05D7\u05D3"}
             </p>
           )}
         </div>
@@ -337,10 +339,10 @@ export function ExpenseForm({
           <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-xs font-bold text-primary-foreground">
             3
           </div>
-          <span className="text-sm font-medium text-foreground">{"חשבו ושלחו התראות"}</span>
+          <span className="text-sm font-medium text-foreground">{"\u05D7\u05E9\u05D1\u05D5 \u05D5\u05E9\u05DC\u05D7\u05D5 \u05D4\u05EA\u05E8\u05D0\u05D5\u05EA"}</span>
           {!isValid && (
             <span className="mr-auto text-xs text-destructive">
-              {"יש להשלים את כל השדות"}
+              {"\u05D9\u05E9 \u05DC\u05D4\u05E9\u05DC\u05D9\u05DD \u05D0\u05EA \u05DB\u05DC \u05D4\u05E9\u05D3\u05D5\u05EA"}
             </span>
           )}
         </div>
@@ -352,10 +354,10 @@ export function ExpenseForm({
             disabled={isCalculating}
             size="lg"
             className="flex-1 bg-gradient-to-l from-primary to-accent text-primary-foreground shadow-lg shadow-primary/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30 disabled:opacity-50"
-            title={!isValid ? "יש להשלים את כל השדות החובה" : "חשבו מי חייב למי"}
+            title={!isValid ? "\u05D9\u05E9 \u05DC\u05D4\u05E9\u05DC\u05D9\u05DD \u05D0\u05EA \u05DB\u05DC \u05D4\u05E9\u05D3\u05D5\u05EA \u05D4\u05D7\u05D5\u05D1\u05D4" : "\u05D7\u05E9\u05D1\u05D5 \u05DE\u05D9 \u05D7\u05D9\u05D9\u05D1 \u05DC\u05DE\u05D9"}
           >
             <Calculator className={`ml-2 h-5 w-5 ${isCalculating ? "animate-spin" : ""}`} />
-            {isCalculating ? "מחשב..." : "חשב חלוקה"}
+            {isCalculating ? "\u05DE\u05D7\u05E9\u05D1..." : "\u05D7\u05E9\u05D1 \u05D7\u05DC\u05D5\u05E7\u05D4"}
           </Button>
 
           <Button
@@ -364,7 +366,7 @@ export function ExpenseForm({
             onClick={onReset}
             disabled={isCalculating}
             className="bg-transparent transition-all duration-200 hover:scale-105"
-            title="אפס טופס והתחל מחדש"
+            title={"\u05D0\u05E4\u05E1 \u05D8\u05D5\u05E4\u05E1 \u05D5\u05D4\u05EA\u05D7\u05DC \u05DE\u05D7\u05D3\u05E9"}
           >
             <RotateCcw className="h-4 w-4" />
           </Button>
