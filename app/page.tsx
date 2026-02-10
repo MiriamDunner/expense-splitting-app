@@ -4,6 +4,7 @@ import { useState } from "react"
 import { ExpenseForm } from "@/components/expense-form"
 import { SettlementSummary } from "@/components/settlement-summary"
 import { Receipt, Sparkles, ArrowDown } from "lucide-react"
+import { ChatBox } from "@/components/chat/chat-box"
 
 export interface Participant {
   id: string
@@ -201,6 +202,18 @@ export default function Home() {
             )}
           </div>
         </div>
+
+        {/* Event Chat - visible once participants are added */}
+        {participants.filter((p) => p.name.trim()).length > 0 && (
+          <div className="mt-8 animate-in fade-in slide-in-from-bottom-6 duration-700" style={{ animationDelay: "200ms" }}>
+            <ChatBox
+              eventId={eventName.trim() || "default-event"}
+              participantNames={participants
+                .filter((p) => p.name.trim())
+                .map((p) => p.name.trim())}
+            />
+          </div>
+        )}
       </div>
     </main>
   )

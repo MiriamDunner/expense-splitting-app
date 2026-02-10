@@ -20,6 +20,23 @@ class Participant(BaseModel):
     email: EmailStr
     amount_paid: float
 
+# --- Chat Models ---
+class MessageCreate(BaseModel):
+    sender_name: str
+    text: str
+
+class MessageResponse(BaseModel):
+    id: str
+    event_id: str
+    sender_name: str
+    text: str
+    created_at: str
+
+# In-memory message store
+from datetime import datetime
+import uuid
+chat_store: Dict[str, list] = {}
+
 class ExpenseRequest(BaseModel):
     participants: List[Participant]
 
@@ -121,6 +138,8 @@ def read_root():
         "version": "1.0",
         "endpoints": {
             "POST /calculate-settlement": "Calculate expense settlement",
+            "GET /events/{event_id}/messages": "Get chat messages for event",
+            "POST /events/{event_id}/messages": "Send a chat message to event",
             "GET /health": "Health check"
         }
     }
@@ -138,6 +157,38 @@ def calculate_settlement(request: ExpenseRequest):
         return minimize_transactions(request.participants)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+# --- Chat Endpoints ---
+
+@app.get("/events/{event_id}/messages", response_model=List[MessageResponse])
+def get_messages(event_id: str):
+    """Get all messages for a specific event, ordered by creation time."""
+    messages = chat_store.get(event_id, [])
+    return sorted(messages, key=lambda m: m["created_at"])
+
+@app.post("/events/{event_id}/messages", response_model=MessageResponse, status_code=201)
+def create_message(event_id: str, message: MessageCreate):
+    """Create a new chat message for a specific event."""
+    if not message.sender_name.strip():
+        raise HTTPException(status_code=400, detail="sender_name is required")
+    if not message.text.strip():
+        raise HTTPException(status_code=400, detail="text is required")
+    if len(message.text) > 1000:
+        raise HTTPException(status_code=400, detail="Message too long (max 1000 chars)")
+
+    msg = {
+        "id": f"msg_{uuid.uuid4().hex[:12]}",
+        "event_id": event_id,
+        "sender_name": message.sender_name.strip(),
+        "text": message.text.strip(),
+        "created_at": datetime.utcnow().isoformat(),
+    }
+
+    if event_id not in chat_store:
+        chat_store[event_id] = []
+    chat_store[event_id].append(msg)
+
+    return msg
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
