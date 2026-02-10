@@ -4,6 +4,7 @@ import { useState } from "react"
 import { ExpenseForm } from "@/components/expense-form"
 import { SettlementSummary } from "@/components/settlement-summary"
 import { Receipt, Sparkles, ArrowDown } from "lucide-react"
+import { ChatPanel } from "@/components/chat/chat-panel"
 
 export interface Participant {
   id: string
@@ -71,7 +72,7 @@ export default function Home() {
     const validParticipants = participants.filter((p) => p.name && p.email)
 
     if (validParticipants.length < 2) {
-      alert("יש להוסיף לפחות 2 משתתפים עם פרטים תקינים")
+      alert("\u05D9\u05E9 \u05DC\u05D4\u05D5\u05E1\u05D9\u05E3 \u05DC\u05E4\u05D7\u05D5\u05EA 2 \u05DE\u05E9\u05EA\u05EA\u05E4\u05D9\u05DD \u05E2\u05DD \u05E4\u05E8\u05D8\u05D9\u05DD \u05EA\u05E7\u05D9\u05E0\u05D9\u05DD")
       return
     }
 
@@ -82,7 +83,7 @@ export default function Home() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          event_name: eventName || "הוצאה משותפת",
+          event_name: eventName || "\u05D4\u05D5\u05E6\u05D0\u05D4 \u05DE\u05E9\u05D5\u05EA\u05E4\u05EA",
           participants: validParticipants.map((p) => ({
             name: p.name,
             email: p.email,
@@ -97,7 +98,7 @@ export default function Home() {
       setSettlement(result)
     } catch (error) {
       console.error("Error calculating settlement:", error)
-      alert("שגיאה בחישוב. נסו שוב.")
+      alert("\u05E9\u05D2\u05D9\u05D0\u05D4 \u05D1\u05D7\u05D9\u05E9\u05D5\u05D1. \u05E0\u05E1\u05D5 \u05E9\u05D5\u05D1.")
     } finally {
       setIsCalculating(false)
     }
@@ -109,13 +110,23 @@ export default function Home() {
     setSettlement(null)
   }
 
+  const namedParticipants = participants
+    .filter((p) => p.name.trim())
+    .map((p) => p.name.trim())
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       {/* Decorative floating shapes */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute -top-40 -left-40 h-80 w-80 rounded-full bg-primary/5 blur-3xl animate-in zoom-in duration-1000" />
-        <div className="absolute top-1/3 -right-40 h-96 w-96 rounded-full bg-accent/5 blur-3xl animate-in zoom-in duration-1000" style={{ animationDelay: "300ms" }} />
-        <div className="absolute -bottom-40 left-1/3 h-80 w-80 rounded-full bg-primary/3 blur-3xl animate-in zoom-in duration-1000" style={{ animationDelay: "600ms" }} />
+        <div
+          className="absolute top-1/3 -right-40 h-96 w-96 rounded-full bg-accent/5 blur-3xl animate-in zoom-in duration-1000"
+          style={{ animationDelay: "300ms" }}
+        />
+        <div
+          className="absolute -bottom-40 left-1/3 h-80 w-80 rounded-full bg-primary/3 blur-3xl animate-in zoom-in duration-1000"
+          style={{ animationDelay: "600ms" }}
+        />
       </div>
 
       <div className="relative mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
@@ -127,14 +138,14 @@ export default function Home() {
               <Sparkles className="absolute -top-1.5 -left-1.5 h-5 w-5 animate-pulse text-accent" />
             </div>
             <h1 className="text-balance text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-              {"מחלק הוצאות"}
+              {"\u05DE\u05D7\u05DC\u05E7 \u05D4\u05D5\u05E6\u05D0\u05D5\u05EA"}
             </h1>
           </div>
           <p
             className="animate-in fade-in slide-in-from-top-5 mx-auto max-w-xl text-balance text-lg leading-relaxed text-muted-foreground duration-700"
             style={{ animationDelay: "100ms" }}
           >
-            {"חלקו הוצאות בצורה הוגנת עם מינימום העברות בעזרת אלגוריתם חכם"}
+            {"\u05D7\u05DC\u05E7\u05D5 \u05D4\u05D5\u05E6\u05D0\u05D5\u05EA \u05D1\u05E6\u05D5\u05E8\u05D4 \u05D4\u05D5\u05D2\u05E0\u05EA \u05E2\u05DD \u05DE\u05D9\u05E0\u05D9\u05DE\u05D5\u05DD \u05D4\u05E2\u05D1\u05E8\u05D5\u05EA \u05D1\u05E2\u05D6\u05E8\u05EA \u05D0\u05DC\u05D2\u05D5\u05E8\u05D9\u05EA\u05DD \u05D7\u05DB\u05DD"}
           </p>
         </header>
 
@@ -168,20 +179,18 @@ export default function Home() {
                     <Sparkles className="absolute -left-2 -top-2 h-7 w-7 animate-pulse text-accent" />
                   </div>
                   <h3 className="mb-2 text-xl font-semibold text-card-foreground">
-                    {"מוכנים לחשב?"}
+                    {"\u05DE\u05D5\u05DB\u05E0\u05D9\u05DD \u05DC\u05D7\u05E9\u05D1?"}
                   </h3>
                   <p className="mb-6 text-balance text-sm leading-relaxed text-muted-foreground">
-                    {"מלאו את הטופס בצד ולחצו"}
-                    {" "}
-                    <span className="font-semibold text-primary">{"\"חשב חלוקה\""}</span>
-                    {" "}
-                    {"כדי לראות מי חייב למי"}
+                    {"\u05DE\u05DC\u05D0\u05D5 \u05D0\u05EA \u05D4\u05D8\u05D5\u05E4\u05E1 \u05D1\u05E6\u05D3 \u05D5\u05DC\u05D7\u05E6\u05D5"}{" "}
+                    <span className="font-semibold text-primary">{"\"\u05D7\u05E9\u05D1 \u05D7\u05DC\u05D5\u05E7\u05D4\""}</span>{" "}
+                    {"\u05DB\u05D3\u05D9 \u05DC\u05E8\u05D0\u05D5\u05EA \u05DE\u05D9 \u05D7\u05D9\u05D9\u05D1 \u05DC\u05DE\u05D9"}
                   </p>
                   <div className="mx-auto max-w-[220px] space-y-3 text-right">
                     {[
-                      "תנו שם לאירוע",
-                      "הוסיפו משתתפים וסכומים",
-                      "חשבו ושלחו מיילים",
+                      "\u05EA\u05E0\u05D5 \u05E9\u05DD \u05DC\u05D0\u05D9\u05E8\u05D5\u05E2",
+                      "\u05D4\u05D5\u05E1\u05D9\u05E4\u05D5 \u05DE\u05E9\u05EA\u05EA\u05E4\u05D9\u05DD \u05D5\u05E1\u05DB\u05D5\u05DE\u05D9\u05DD",
+                      "\u05D7\u05E9\u05D1\u05D5 \u05D5\u05E9\u05DC\u05D7\u05D5 \u05DE\u05D9\u05D9\u05DC\u05D9\u05DD",
                     ].map((step, i) => (
                       <div
                         key={i}
@@ -191,7 +200,9 @@ export default function Home() {
                         <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-xs font-bold text-primary-foreground shadow-sm">
                           {i + 1}
                         </div>
-                        <span className="text-sm text-muted-foreground">{step}</span>
+                        <span className="text-sm text-muted-foreground">
+                          {step}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -202,6 +213,14 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Chat Panel - floating side panel with identity */}
+      {namedParticipants.length > 0 && (
+        <ChatPanel
+          eventId={eventName.trim() || "default-event"}
+          participantNames={namedParticipants}
+        />
+      )}
     </main>
   )
 }
