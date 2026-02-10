@@ -2,8 +2,26 @@
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Plus, Trash2, Calculator, RotateCcw, User, Mail, DollarSign, Calendar } from "lucide-react"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  Plus,
+  Trash2,
+  Calculator,
+  RotateCcw,
+  User,
+  Mail,
+  Coins,
+  CalendarHeart,
+  CheckCircle2,
+  AlertCircle,
+  Users,
+} from "lucide-react"
 import type { Participant } from "@/app/page"
 
 interface ExpenseFormProps {
@@ -11,7 +29,11 @@ interface ExpenseFormProps {
   onEventNameChange: (name: string) => void
   participants: Participant[]
   onAddParticipant: () => void
-  onUpdateParticipant: (id: string, field: keyof Participant, value: string | number) => void
+  onUpdateParticipant: (
+    id: string,
+    field: keyof Participant,
+    value: string | number,
+  ) => void
   onRemoveParticipant: (id: string) => void
   onCalculate: () => void
   onReset: () => void
@@ -40,31 +62,31 @@ export function ExpenseForm({
     const errors: string[] = []
 
     if (!eventName.trim()) {
-      errors.push("Event name is required")
+      errors.push("חובה למלא שם אירוע")
     }
 
     if (participants.length < 2) {
-      errors.push("At least 2 participants are required")
+      errors.push("חובה להוסיף לפחות 2 משתתפים")
     }
 
     participants.forEach((participant, index) => {
       if (!participant.name.trim()) {
-        errors.push(`Participant ${index + 1}: Name is required`)
+        errors.push(`משתתף ${index + 1}: חובה למלא שם`)
       }
 
       if (!participant.email.trim()) {
-        errors.push(`Participant ${index + 1}: Email is required`)
+        errors.push(`משתתף ${index + 1}: חובה למלא מייל`)
       } else if (!isValidEmail(participant.email)) {
-        errors.push(`Participant ${index + 1}: Invalid email format`)
+        errors.push(`משתתף ${index + 1}: כתובת מייל לא תקינה`)
       }
 
       if (participant.amount_paid < 0) {
-        errors.push(`Participant ${index + 1}: Amount cannot be negative`)
+        errors.push(`משתתף ${index + 1}: סכום לא יכול להיות שלילי`)
       }
     })
 
     if (totalPaid === 0) {
-      errors.push("At least one participant must have paid something")
+      errors.push("לפחות משתתף אחד צריך לשלם משהו")
     }
 
     return { isValid: errors.length === 0, errors }
@@ -73,7 +95,7 @@ export function ExpenseForm({
   const handleCalculate = () => {
     const validation = validateForm()
     if (!validation.isValid) {
-      alert("Please fix the following errors:\n\n" + validation.errors.join("\n"))
+      alert("יש לתקן את השגיאות הבאות:\n\n" + validation.errors.join("\n"))
       return
     }
     onCalculate()
@@ -83,221 +105,266 @@ export function ExpenseForm({
     return email.trim() !== "" && !isValidEmail(email)
   }
 
+  const isParticipantComplete = (p: Participant) =>
+    p.name.trim() && p.email.trim() && isValidEmail(p.email)
+
   const { isValid } = validateForm()
+  const completedCount = participants.filter(isParticipantComplete).length
 
   return (
-    <Card className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Calendar className="h-5 w-5 text-primary" />
-          Add Participants
+    <Card className="animate-in fade-in slide-in-from-bottom-4 overflow-hidden border-border/60 shadow-xl duration-500">
+      <CardHeader className="bg-gradient-to-l from-primary/5 to-accent/5 pb-4">
+        <CardTitle className="flex items-center gap-2.5 text-xl">
+          <div className="rounded-lg bg-primary/10 p-1.5">
+            <Users className="h-5 w-5 text-primary" />
+          </div>
+          {"הוסיפו משתתפים"}
         </CardTitle>
-        <CardDescription>Enter the event name and participant details to get started</CardDescription>
+        <CardDescription className="text-sm leading-relaxed">
+          {"הזינו את שם האירוע ופרטי המשתתפים כדי להתחיל"}
+        </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+      <CardContent className="space-y-5 pt-5">
+        {/* Step 1: Event Name */}
+        <div className="space-y-2.5">
+          <div className="flex items-center gap-2.5 rounded-lg bg-muted/40 p-2.5">
+            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-xs font-bold text-primary-foreground">
               1
             </div>
-            <span className="font-medium">Name your event</span>
+            <span className="text-sm font-medium text-foreground">{"שם האירוע"}</span>
           </div>
-        </div>
 
-        <div className="space-y-2">
-          <label className="flex items-center gap-2 text-sm font-medium text-foreground">
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-            Event Name <span className="text-destructive">*</span>
-          </label>
-          <Input
-            placeholder="e.g., Weekend Trip, Dinner Party, Team Lunch"
-            value={eventName}
-            onChange={(e) => onEventNameChange(e.target.value)}
-            className={`transition-all duration-200 ${!eventName.trim() ? "border-destructive/50" : "border-primary/50 focus:ring-2 focus:ring-primary/20"}`}
-          />
+          <div className="relative">
+            <CalendarHeart className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="לדוגמה: טיול סופ\"ש, ארוחת ערב, צהריים צוותי"
+              value={eventName}
+              onChange={(e) => onEventNameChange(e.target.value)}
+              className={`pr-10 transition-all duration-300 ${
+                !eventName.trim() ? "border-destructive/40 focus:border-destructive" : "border-primary/40 ring-2 ring-primary/10 focus:ring-primary/25"
+              }`}
+            />
+          </div>
           {eventName.trim() && (
-            <p className="animate-in fade-in slide-in-from-top-1 flex items-center gap-1 text-xs text-primary">
-              ✓ Event name set
+            <p className="flex items-center gap-1.5 text-xs font-medium text-primary animate-in fade-in slide-in-from-top-1 duration-300">
+              <CheckCircle2 className="h-3.5 w-3.5" />
+              {"שם האירוע הוגדר"}
             </p>
           )}
         </div>
 
-        <div className="rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+        {/* Step 2: Participants */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2.5 rounded-lg bg-muted/40 p-2.5">
+            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-xs font-bold text-primary-foreground">
               2
             </div>
-            <span className="font-medium">Add participants and their expenses</span>
+            <span className="text-sm font-medium text-foreground">{"פרטי משתתפים"}</span>
+            {completedCount > 0 && (
+              <span className="mr-auto rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
+                {completedCount}/{participants.length} {"הושלמו"}
+              </span>
+            )}
           </div>
-        </div>
 
-        <div className="space-y-4">
-          {participants.map((participant, index) => (
-            <div
-              key={participant.id}
-              className="animate-in fade-in slide-in-from-left-4 space-y-3 rounded-lg border border-border bg-card p-4 shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md"
-              style={{ animationDelay: `${index * 50}ms` }}
-            >
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                  <User className="h-4 w-4" />
-                  Participant {index + 1}
-                  {participant.name.trim() && isValidEmail(participant.email) && (
-                    <span className="ml-2 rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">✓ Complete</span>
+          <div className="space-y-3">
+            {participants.map((participant, index) => (
+              <div
+                key={participant.id}
+                className={`group relative space-y-3 rounded-xl border p-4 shadow-sm transition-all duration-300 hover:shadow-md animate-in fade-in slide-in-from-bottom-3 ${
+                  isParticipantComplete(participant)
+                    ? "border-primary/30 bg-primary/[0.02]"
+                    : "border-border/60 bg-card"
+                }`}
+                style={{ animationDelay: `${index * 60}ms` }}
+              >
+                {/* Participant header */}
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                    <div className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-colors duration-300 ${
+                      isParticipantComplete(participant)
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground"
+                    }`}>
+                      {isParticipantComplete(participant) ? (
+                        <CheckCircle2 className="h-4 w-4" />
+                      ) : (
+                        <User className="h-3.5 w-3.5" />
+                      )}
+                    </div>
+                    {"משתתף"} {index + 1}
+                  </span>
+                  {participants.length > 1 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onRemoveParticipant(participant.id)}
+                      className="h-8 w-8 bg-transparent p-0 text-muted-foreground opacity-0 transition-all duration-200 hover:scale-110 hover:text-destructive group-hover:opacity-100"
+                      title="הסרת משתתף"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   )}
-                </span>
-                {participants.length > 1 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onRemoveParticipant(participant.id)}
-                    className="h-8 w-8 p-0 text-destructive transition-transform duration-200 hover:scale-110 hover:text-destructive"
-                    title="Remove participant"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-sm font-medium text-foreground">
-                    <User className="h-3.5 w-3.5 text-muted-foreground" />
-                    Name <span className="text-destructive">*</span>
-                  </label>
-                  <Input
-                    placeholder="John Doe"
-                    value={participant.name}
-                    onChange={(e) => onUpdateParticipant(participant.id, "name", e.target.value)}
-                    className={`transition-all duration-200 ${
-                      !participant.name.trim()
-                        ? "border-destructive/50"
-                        : "border-primary/30 focus:ring-2 focus:ring-primary/20"
-                    }`}
-                  />
                 </div>
 
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-sm font-medium text-foreground">
-                    <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-                    Email <span className="text-destructive">*</span>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {/* Name */}
+                  <div className="space-y-1.5">
+                    <label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                      <User className="h-3 w-3" />
+                      {"שם"} <span className="text-destructive">*</span>
+                    </label>
+                    <Input
+                      placeholder="ישראל ישראלי"
+                      value={participant.name}
+                      onChange={(e) =>
+                        onUpdateParticipant(participant.id, "name", e.target.value)
+                      }
+                      className={`h-9 text-sm transition-all duration-200 ${
+                        !participant.name.trim()
+                          ? "border-destructive/30"
+                          : "border-primary/30"
+                      }`}
+                    />
+                  </div>
+
+                  {/* Email */}
+                  <div className="space-y-1.5">
+                    <label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                      <Mail className="h-3 w-3" />
+                      {"מייל"} <span className="text-destructive">*</span>
+                    </label>
+                    <Input
+                      type="email"
+                      dir="ltr"
+                      placeholder="israel@example.com"
+                      value={participant.email}
+                      onChange={(e) =>
+                        onUpdateParticipant(participant.id, "email", e.target.value)
+                      }
+                      className={`h-9 text-left text-sm transition-all duration-200 ${
+                        getEmailError(participant.email)
+                          ? "border-destructive ring-1 ring-destructive/20"
+                          : !participant.email.trim()
+                            ? "border-destructive/30"
+                            : "border-primary/30"
+                      }`}
+                    />
+                    {getEmailError(participant.email) && (
+                      <p className="flex items-center gap-1 text-xs text-destructive animate-in fade-in slide-in-from-top-1 duration-200">
+                        <AlertCircle className="h-3 w-3" />
+                        {"כתובת מייל לא תקינה"}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Amount */}
+                <div className="space-y-1.5">
+                  <label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                    <Coins className="h-3 w-3" />
+                    {"סכום ששולם"}
+                    <span className="font-normal text-muted-foreground/70">{"(לא חובה)"}</span>
                   </label>
-                  <Input
-                    type="email"
-                    placeholder="john@example.com"
-                    value={participant.email}
-                    onChange={(e) => onUpdateParticipant(participant.id, "email", e.target.value)}
-                    className={`transition-all duration-200 ${
-                      getEmailError(participant.email)
-                        ? "border-destructive"
-                        : !participant.email.trim()
-                          ? "border-destructive/50"
-                          : "border-primary/30 focus:ring-2 focus:ring-primary/20"
-                    }`}
-                  />
-                  {getEmailError(participant.email) && (
-                    <p className="animate-in fade-in slide-in-from-top-1 text-xs text-destructive">
-                      ✗ Please enter a valid email address
+                  <div className="relative">
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-muted-foreground">
+                      {"₪"}
+                    </span>
+                    <Input
+                      type="number"
+                      dir="ltr"
+                      placeholder="0.00"
+                      min="0"
+                      step="0.01"
+                      value={participant.amount_paid || ""}
+                      onChange={(e) =>
+                        onUpdateParticipant(
+                          participant.id,
+                          "amount_paid",
+                          Number.parseFloat(e.target.value) || 0,
+                        )
+                      }
+                      className={`h-9 pr-8 text-left text-sm transition-all duration-200 ${
+                        participant.amount_paid < 0
+                          ? "border-destructive"
+                          : participant.amount_paid > 0
+                            ? "border-primary/30 font-semibold"
+                            : ""
+                      }`}
+                    />
+                  </div>
+                  {participant.amount_paid < 0 && (
+                    <p className="flex items-center gap-1 text-xs text-destructive animate-in fade-in duration-200">
+                      <AlertCircle className="h-3 w-3" />
+                      {"סכום לא יכול להיות שלילי"}
                     </p>
                   )}
-                  {!getEmailError(participant.email) && participant.email.trim() && (
-                    <p className="animate-in fade-in slide-in-from-top-1 text-xs text-primary">✓ Valid email</p>
-                  )}
                 </div>
               </div>
+            ))}
+          </div>
 
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm font-medium text-foreground">
-                  <DollarSign className="h-3.5 w-3.5 text-muted-foreground" />
-                  Amount Paid ($)
-                  <span className="text-xs font-normal text-muted-foreground">(optional)</span>
-                </label>
-                <Input
-                  type="number"
-                  placeholder="0.00"
-                  min="0"
-                  step="0.01"
-                  value={participant.amount_paid || ""}
-                  onChange={(e) =>
-                    onUpdateParticipant(participant.id, "amount_paid", Number.parseFloat(e.target.value) || 0)
-                  }
-                  className={`transition-all duration-200 ${
-                    participant.amount_paid < 0
-                      ? "border-destructive"
-                      : participant.amount_paid > 0
-                        ? "border-primary/30 focus:ring-2 focus:ring-primary/20"
-                        : ""
-                  }`}
-                />
-                {participant.amount_paid < 0 && (
-                  <p className="animate-in fade-in slide-in-from-top-1 text-xs text-destructive">
-                    ✗ Amount cannot be negative
-                  </p>
-                )}
-                {participant.amount_paid > 0 && (
-                  <p className="animate-in fade-in slide-in-from-top-1 text-xs text-primary">
-                    ✓ ${participant.amount_paid.toFixed(2)} paid
-                  </p>
-                )}
-              </div>
-            </div>
-          ))}
+          <Button
+            variant="outline"
+            onClick={onAddParticipant}
+            className="w-full border-dashed border-primary/40 bg-transparent transition-all duration-300 hover:scale-[1.01] hover:border-primary hover:bg-primary/5"
+          >
+            <Plus className="ml-2 h-4 w-4" />
+            {"הוסיפו משתתף נוסף"}
+          </Button>
         </div>
 
-        <Button
-          variant="outline"
-          onClick={onAddParticipant}
-          className="w-full border-dashed border-primary/50 bg-transparent transition-all duration-200 hover:scale-[1.02] hover:border-primary hover:bg-primary/5"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Add Another Participant
-        </Button>
-
-        <div className="animate-in fade-in slide-in-from-bottom-2 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 p-4 shadow-sm ring-1 ring-primary/20">
+        {/* Total */}
+        <div className="overflow-hidden rounded-xl bg-gradient-to-l from-primary/10 via-primary/5 to-accent/10 p-4 shadow-sm ring-1 ring-primary/15 animate-in fade-in duration-500">
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-2 text-sm font-medium text-foreground">
-              <DollarSign className="h-4 w-4" />
-              Total Expense
+              <Coins className="h-4 w-4 text-primary" />
+              {"סה\"כ הוצאות"}
             </span>
-            <span className="text-2xl font-bold text-foreground">${totalPaid.toFixed(2)}</span>
+            <span className="text-2xl font-bold tracking-tight text-foreground">
+              {"₪"}{totalPaid.toFixed(2)}
+            </span>
           </div>
-          {totalPaid > 0 && (
-            <p className="mt-2 text-xs text-muted-foreground">
-              Split between {participants.length} participants = ${(totalPaid / participants.length).toFixed(2)} per
-              person
+          {totalPaid > 0 && participants.length >= 2 && (
+            <p className="mt-2 text-xs text-muted-foreground animate-in fade-in duration-300">
+              {"מחולק בין"} {participants.length} {"משתתפים"} = {"₪"}{(totalPaid / participants.length).toFixed(2)} {"לכל אחד"}
             </p>
           )}
         </div>
 
-        <div className="rounded-lg bg-muted/50 p-3 text-sm">
-          <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
-              3
-            </div>
-            <span className="font-medium text-muted-foreground">Calculate and send notifications</span>
+        {/* Step 3 */}
+        <div className="flex items-center gap-2.5 rounded-lg bg-muted/40 p-2.5">
+          <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-xs font-bold text-primary-foreground">
+            3
           </div>
+          <span className="text-sm font-medium text-foreground">{"חשבו ושלחו התראות"}</span>
           {!isValid && (
-            <p className="ml-8 mt-2 text-xs text-destructive">Please complete all required fields before calculating</p>
+            <span className="mr-auto text-xs text-destructive">
+              {"יש להשלים את כל השדות"}
+            </span>
           )}
         </div>
 
+        {/* Actions */}
         <div className="flex gap-3">
           <Button
             onClick={handleCalculate}
             disabled={isCalculating}
-            className="flex-1 transition-all duration-200 hover:scale-[1.02] disabled:opacity-50"
-            title={!isValid ? "Please complete all required fields" : "Calculate who owes what"}
+            size="lg"
+            className="flex-1 bg-gradient-to-l from-primary to-accent text-primary-foreground shadow-lg shadow-primary/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30 disabled:opacity-50"
+            title={!isValid ? "יש להשלים את כל השדות החובה" : "חשבו מי חייב למי"}
           >
-            <Calculator className={`mr-2 h-4 w-4 ${isCalculating ? "animate-spin" : ""}`} />
-            {isCalculating ? "Calculating..." : "Calculate Settlement"}
+            <Calculator className={`ml-2 h-5 w-5 ${isCalculating ? "animate-spin" : ""}`} />
+            {isCalculating ? "מחשב..." : "חשב חלוקה"}
           </Button>
 
           <Button
             variant="outline"
+            size="lg"
             onClick={onReset}
             disabled={isCalculating}
-            className="bg-transparent transition-transform duration-200 hover:scale-110"
-            title="Reset form and start over"
+            className="bg-transparent transition-all duration-200 hover:scale-105"
+            title="אפס טופס והתחל מחדש"
           >
             <RotateCcw className="h-4 w-4" />
           </Button>
