@@ -29,7 +29,10 @@ jobs:
           corepack prepare pnpm@latest --activate
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --yes
+
+      - name: Ensure pnpm scripts are allowed
+        run: pnpm config set ignore-scripts false
 
       - name: Detect frontend test script
         id: detect_test
@@ -63,7 +66,9 @@ jobs:
         run: pnpm exec tsc --noEmit
 
       - name: Build
-        run: pnpm build
+        run: |
+          # Some environments may encounter Turbopack path-length issues; disable to ensure reliable CI builds
+          NEXT_DISABLE_TURBOPACK=1 pnpm build
 
       - name: Cache Next.js build output
         uses: actions/cache@v4
