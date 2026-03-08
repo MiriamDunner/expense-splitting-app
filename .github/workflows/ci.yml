@@ -31,7 +31,7 @@ jobs:
         run: pnpm -v
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --yes
+        run: pnpm install --frozen-lockfile
 
       - name: Ensure pnpm scripts are allowed
         run: pnpm config set ignore-scripts false
