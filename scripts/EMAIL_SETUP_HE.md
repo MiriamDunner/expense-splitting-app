@@ -14,35 +14,35 @@
 2. צור "App-specific password" ב-Account Settings
 3. הגדר environment variables:
 
-```bash
+\`\`\`bash
 export SMTP_FROM_EMAIL="your-email@gmail.com"
 export SMTP_PASSWORD="your-app-specific-password"
 export SMTP_SERVER="smtp.gmail.com"
 export SMTP_PORT="587"
-```
+\`\`\`
 
 #### הגדרה עבור Outlook:
-```bash
+\`\`\`bash
 export SMTP_FROM_EMAIL="your-email@outlook.com"
 export SMTP_PASSWORD="your-password"
 export SMTP_SERVER="smtp-mail.outlook.com"
 export SMTP_PORT="587"
-```
+\`\`\`
 
 #### הגדרה עבור Gmail App Password:
-```bash
+\`\`\`bash
 export SMTP_FROM_EMAIL="your-email@gmail.com"
 export SMTP_PASSWORD="your-16-character-app-password"
 export SMTP_SERVER="smtp.gmail.com"
 export SMTP_PORT="587"
-```
+\`\`\`
 
 ### Option 2: Resend API (Alternative)
 שימוש בResend service לשליחת מיילים.
 
-```bash
+\`\`\`bash
 export RESEND_API_KEY="your_resend_api_key"
-```
+\`\`\`
 
 ## איך זה עובד:
 
@@ -76,7 +76,7 @@ export RESEND_API_KEY="your_resend_api_key"
 
 בדוק את ה-endpoint ידנית:
 
-```bash
+\`\`\`bash
 curl -X POST http://localhost:8000/send-notifications \
   -H "Content-Type: application/json" \
   -d '{
@@ -88,4 +88,4 @@ curl -X POST http://localhost:8000/send-notifications \
       "summary": {...}
     }
   }'
-```
+\`\`\`

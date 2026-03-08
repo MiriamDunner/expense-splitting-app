@@ -25,35 +25,35 @@
 1. הפוך 2FA את על Gmail
 2. צור "App Password" בחשבון Google
 3. הגדר Environment Variables:
-```bash
+\`\`\`bash
 set SMTP_FROM_EMAIL=your-email@gmail.com
 set SMTP_PASSWORD=your-16-char-app-password
 set SMTP_SERVER=smtp.gmail.com
 set SMTP_PORT=587
-```
+\`\`\`
 
 **אפשרות 2: Resend API**
-```bash
+\`\`\`bash
 set RESEND_API_KEY=your_api_key
-```
+\`\`\`
 
 4. **הפעל מחדש את FastAPI**
 5. עכשיו מיילים יישלחו אמיתיים!
 
 ## זרימת עבודה:
 
-```
+\`\`\`
 משתמש → ממלא טופס → לוחץ "חשב חלוקה" → 
 לוחץ "שלחו התראות במייל" → 
 API Route (Next.js) → FastAPI Backend → 
 Python Script → SMTP / Resend → מיילים מגיעים למשתתפים ✉️
-```
+\`\`\`
 
 ## בדיקה של Endpoint (Manual):
 
-```bash
+\`\`\`bash
 curl http://localhost:8000/send-notifications -X POST
-```
+\`\`\`
 
 ## ملفات שונו:
 
