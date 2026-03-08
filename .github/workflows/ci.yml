@@ -45,7 +45,18 @@ jobs:
         if: steps.detect_test.outputs.has_test_script == 'true'
         run: pnpm test
 
-      - name: Lint
+      - name: Detect eslint
+        id: detect_eslint
+        run: |
+          if node -e "process.exit(!(require('./package.json').devDependencies?.eslint || require('./package.json').dependencies?.eslint))"; then
+            echo "has_eslint=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_eslint=false" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
+
+      - name: Lint (if eslint is installed)
+        if: steps.detect_eslint.outputs.has_eslint == 'true'
         run: pnpm lint
 
       - name: Typecheck
