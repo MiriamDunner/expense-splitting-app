@@ -68,9 +68,10 @@ jobs:
         run: pnpm exec tsc --noEmit
 
       - name: Build
-        run: |
-          # Some environments may encounter Turbopack path-length issues; disable to ensure reliable CI builds
-          NEXT_DISABLE_TURBOPACK=1 pnpm build
+        env:
+          NEXT_DISABLE_TURBOPACK: '1'
+          NEXT_TELEMETRY_DISABLED: '1'
+        run: pnpm build
 
       - name: Cache Next.js build output
         uses: actions/cache@v4
