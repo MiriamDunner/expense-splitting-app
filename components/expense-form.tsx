@@ -22,7 +22,7 @@ import {
   AlertCircle,
   Users,
 } from "lucide-react"
-import type { Participant } from "@/app/page"
+import type { Participant } from "@/components/types"
 
 interface ExpenseFormProps {
   eventName: string

@@ -6,37 +6,7 @@ import { SettlementSummary } from "@/components/settlement-summary"
 import { EventTopBar } from "@/components/event-top-bar"
 import { ChatPanel } from "@/components/chat/chat-panel"
 import { Receipt, Sparkles, ArrowDown } from "lucide-react"
-
-export interface Participant {
-  id: string
-  name: string
-  email: string
-  amount_paid: number
-}
-
-export interface Transaction {
-  from_name: string
-  from_email: string
-  to_name: string
-  to_email: string
-  amount: number
-}
-
-export interface SettlementResult {
-  event_name: string
-  total_expense: number
-  per_person_share: number
-  transactions: Transaction[]
-  summary: Record<
-    string,
-    {
-      name: string
-      amount_paid: number
-      should_pay: number
-      should_receive: number
-    }
-  >
-}
+import type { Participant, SettlementResult } from "@/components/types"
 
 interface EventRoomProps {
   eventId: string
@@ -112,11 +82,13 @@ export function EventRoom({ eventId, eventName, onLeave }: EventRoomProps) {
 
   const updateParticipant = (
     id: string,
-    field: keyof Participant,
+    field: string | number | symbol,
     value: string | number,
   ) => {
     const updated = participants.map((p) =>
-      p.id === id ? { ...p, [field]: value } : p,
+      p.id === id
+        ? { ...p, [field as keyof Participant]: value }
+        : p,
     )
     setParticipants(updated)
     syncToServer(updated)

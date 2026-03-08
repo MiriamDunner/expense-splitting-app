@@ -22,7 +22,7 @@ import {
   Loader2,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import type { SettlementResult } from "@/app/page"
+import type { SettlementResult } from "@/components/types"
 import { useState } from "react"
 
 interface SettlementSummaryProps {
@@ -138,7 +138,7 @@ export function SettlementSummary({ settlement }: SettlementSummaryProps) {
                 <TrendingUp className="h-4 w-4 text-primary" />
                 {"העברות נדרשות"} ({settlement.transactions.length})
               </h4>
-              {settlement.transactions.map((transaction, index) => (
+              {settlement.transactions.map((transaction, index: number) => (
                 <div
                   key={index}
                   className="flex items-center gap-3 rounded-xl border border-border/60 bg-card p-4 shadow-sm transition-all duration-300 hover:border-primary/40 hover:shadow-md animate-in fade-in slide-in-from-bottom-3 duration-400"
@@ -194,7 +194,7 @@ export function SettlementSummary({ settlement }: SettlementSummaryProps) {
         <CardContent>
           <div className="space-y-3">
             {Object.entries(settlement.summary).map(
-              ([email, info], index) => (
+              ([email, info]: [string, { name: string; amount_paid: number; should_pay: number; should_receive: number }], index: number) => (
                 <div
                   key={email}
                   className="rounded-xl border border-border/60 bg-card p-4 shadow-sm transition-all duration-300 hover:border-primary/30 hover:shadow-md animate-in fade-in slide-in-from-bottom-3 duration-400"
