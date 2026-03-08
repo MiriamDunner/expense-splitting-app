@@ -54,7 +54,7 @@ Built with **AI-assisted smart coding (vibe coding)** using [v0.app](https://v0.
 
 ### App Flow
 
-```
+\`\`\`
 1. Create Event          2. Share Credentials       3. Collaborate
    Enter a name             Friends join with         Add participants,
    + password               event name + password     expenses, and chat
@@ -62,7 +62,7 @@ Built with **AI-assisted smart coding (vibe coding)** using [v0.app](https://v0.
 4. Calculate              5. Settle                  6. Notify
    Smart algorithm          See who owes whom           Send personalized
    minimizes transfers      in minimal transactions     emails to everyone
-```
+\`\`\`
 
 ### The Settlement Algorithm
 
@@ -76,14 +76,14 @@ The core algorithm minimizes the number of money transfers needed to settle all 
 **Example:**
 > 4 friends go on a trip. Instead of 12 possible transactions (everyone paying everyone), the algorithm reduces it to just 2-3 optimal transfers.
 
-```
+\`\`\`
 Before (naive):     After (optimized):
 A -> B: 50          A -> C: 80
 A -> C: 30          B -> C: 40
 B -> C: 40
 B -> D: 10
 D -> C: 20
-```
+\`\`\`
 
 ---
 
@@ -111,7 +111,7 @@ D -> C: 20
 
 ### Installation
 
-```bash
+\`\`\`bash
 # Clone the repository
 git clone https://github.com/MiriamDunner/expense-splitting-app.git
 
@@ -123,7 +123,7 @@ npm install
 
 # Start development server
 npm run dev
-```
+\`\`\`
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
@@ -131,22 +131,22 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 To enable real email sending, add your Resend API key:
 
-```bash
+\`\`\`bash
 # Add to your environment variables
 RESEND_API_KEY=re_your_api_key_here
-```
+\`\`\`
 
 > Without the API key, the app runs in preview mode and logs email content to the console.
 
 ### FastAPI Backend (Optional)
 
-```bash
+\`\`\`bash
 # Install Python dependencies
 pip install -r scripts/requirements.txt
 
 # Start the API server
 python scripts/fastapi_server.py
-```
+\`\`\`
 
 API docs available at [http://localhost:8000/docs](http://localhost:8000/docs)
 
@@ -154,7 +154,7 @@ API docs available at [http://localhost:8000/docs](http://localhost:8000/docs)
 
 ## Project Structure
 
-```
+\`\`\`
 expense-splitting-app/
 ├── app/
 │   ├── api/
@@ -182,7 +182,7 @@ expense-splitting-app/
 │   └── send_email_notifications.py  # Standalone email script
 └── public/
     └── ...                          # Static assets & README images
-```
+\`\`\`
 
 ---
 
