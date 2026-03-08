@@ -21,12 +21,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: pnpm
 
-      - name: Enable pnpm (via Corepack)
-        run: |
-          corepack enable
-          corepack prepare pnpm@latest --activate
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+
+      - name: Verify pnpm is available
+        run: pnpm -v
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --yes
@@ -98,7 +100,7 @@ jobs:
 
       - name: Run backend tests
         working-directory: scripts
-        run: pytest -q
+        run: python -m pytest -q
 
       - name: Verify Python files compile
         working-directory: scripts
