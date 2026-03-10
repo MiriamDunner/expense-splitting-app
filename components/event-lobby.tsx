@@ -100,13 +100,13 @@ export function EventLobby({ onEventJoined }: EventLobbyProps) {
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 px-4">
       {/* Decorative floating shapes */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-40 -left-40 h-80 w-80 rounded-full bg-primary/5 blur-3xl animate-in zoom-in duration-1000" />
+        <div className="absolute -top-40 -left-40 h-80 w-80 rounded-full bg-primary/5 blur-3xl animate-in zoom-in animate-float-slow duration-1000" />
         <div
-          className="absolute top-1/3 -right-40 h-96 w-96 rounded-full bg-accent/5 blur-3xl animate-in zoom-in duration-1000"
+          className="absolute top-1/3 -right-40 h-96 w-96 rounded-full bg-accent/5 blur-3xl animate-in zoom-in animate-float duration-1000"
           style={{ animationDelay: "300ms" }}
         />
         <div
-          className="absolute -bottom-40 left-1/3 h-80 w-80 rounded-full bg-primary/3 blur-3xl animate-in zoom-in duration-1000"
+          className="absolute -bottom-40 left-1/3 h-80 w-80 rounded-full bg-primary/3 blur-3xl animate-in zoom-in animate-float-slow animate-glow duration-1000"
           style={{ animationDelay: "600ms" }}
         />
       </div>

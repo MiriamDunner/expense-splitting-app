@@ -33,14 +33,20 @@ export default function Home() {
   }
 
   if (!eventId) {
-    return <EventLobby onEventJoined={handleEventJoined} />
+    return (
+      <div key="lobby" className="animate-in fade-in slide-in-from-right-4 duration-500">
+        <EventLobby onEventJoined={handleEventJoined} />
+      </div>
+    )
   }
 
   return (
-    <EventRoom
-      eventId={eventId}
-      eventName={eventName}
-      onLeave={handleLeave}
-    />
+    <div key={eventId} className="animate-in fade-in slide-in-from-right-4 duration-500">
+      <EventRoom
+        eventId={eventId}
+        eventName={eventName}
+        onLeave={handleLeave}
+      />
+    </div>
   )
 }

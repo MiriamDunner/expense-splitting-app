@@ -154,9 +154,9 @@ export function EventRoom({ eventId, eventName, onLeave }: EventRoomProps) {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       {/* Decorative floating shapes */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-40 -left-40 h-80 w-80 rounded-full bg-primary/5 blur-3xl" />
-        <div className="absolute top-1/3 -right-40 h-96 w-96 rounded-full bg-accent/5 blur-3xl" />
-        <div className="absolute -bottom-40 left-1/3 h-80 w-80 rounded-full bg-primary/3 blur-3xl" />
+        <div className="absolute -top-40 -left-40 h-80 w-80 rounded-full bg-primary/5 blur-3xl animate-float-slow" />
+        <div className="absolute top-1/3 -right-40 h-96 w-96 rounded-full bg-accent/5 blur-3xl animate-float" />
+        <div className="absolute -bottom-40 left-1/3 h-80 w-80 rounded-full bg-primary/3 blur-3xl animate-float-slow animate-glow" />
       </div>
 
       {/* Top bar */}
